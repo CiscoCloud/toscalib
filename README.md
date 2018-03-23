@@ -26,6 +26,31 @@ This library is an implementation of the TOSCA definition as described in the do
 ## Normative Types
 The normative types definitions are included de facto. The files are embeded using go-bindata.
 
+## Dynamic targets for workflow steps
+When defining workflow steps, you can set the step target dynamically using the get_input property function. The library will first look in  workflow inputs for the value and if it not present in the workflow inputs, will check the template inputs for the same.
+
+This is an additional feature on top of the spec. It does not break the standard spec functionality in any way. So you can set set target as a string as well.
+
+### Example
+```yaml
+workflows:
+    scaleup-app:
+      inputs:
+        increment:
+          type: integer
+        min_instances:
+          type: integer
+        max_instances:
+          type: integer
+      steps:
+        scale:
+          target: { get_input: target }
+          activities:
+            - set_state: scaling
+            - call_operation: Scale.scaleup
+            - set_state: scaled
+```
+
 # Howto
 
 Create a `ServiceTemplateDefinition` and call `Parse(r io.Reader)` of `ParseCsar(c string)` to fill it with a YAML definition.
