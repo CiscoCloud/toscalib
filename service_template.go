@@ -146,6 +146,29 @@ func (s *ServiceTemplateDefinition) GetInputValue(prop string, raw bool) interfa
 	return input.Evaluate(s, "")
 }
 
+// GetWorkflowInputValue retrieves a worflow input value from Service Template Definition in
+// the raw form (function evaluation not performed), or actual value after all
+// function evaluation has completed.
+func (s *ServiceTemplateDefinition) GetWorkflowInputValue(prop, wfname string, raw bool) interface{} {
+	if _, ok := s.TopologyTemplate.Workflows[wfname].Inputs[prop]; !ok {
+		// No workflow inputs, lets use Evaluate to find out if the its present in template inputs
+		return s.GetInputValue(prop, raw)
+	}
+
+	// Its there in the workflow, lets fetch it.
+	if raw {
+		return s.TopologyTemplate.Workflows[wfname].Inputs[prop].Value
+	}
+	input := s.TopologyTemplate.Workflows[wfname].Inputs[prop].Value
+	return input.Evaluate(s, "")
+}
+
+// SetWorkFlowInputValue sets an input value on a Service Template Definition
+func (s *ServiceTemplateDefinition) SetWorkFlowInputValue(prop, wfname string, value interface{}) {
+	v := newPAValue(value)
+	s.TopologyTemplate.Workflows[wfname].Inputs[prop] = PropertyDefinition{Value: *v}
+}
+
 // SetInputValue sets an input value on a Service Template Definition
 func (s *ServiceTemplateDefinition) SetInputValue(prop string, value interface{}) {
 	v := newPAValue(value)

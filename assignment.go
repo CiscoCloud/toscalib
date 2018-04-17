@@ -350,3 +350,16 @@ func (p *Assignment) Evaluate(std *ServiceTemplateDefinition, ctx string) interf
 
 	return nil
 }
+
+// EvaluateForWorkflow gets the value of an Assignment, including the evaluation of expression or function
+func (p *Assignment) EvaluateForWorkflow(std *ServiceTemplateDefinition, ctx string) interface{} {
+	// TODO(kenjones): Add support for the evaluation of ConstraintClause
+	if p.Function == GetInputFunc {
+		if len(p.Args) == 1 {
+			return std.GetWorkflowInputValue(p.Args[0].(string), ctx, false)
+		}
+	}
+
+	// If its not a get_input scenario, let Evaluate handle it.
+	return p.Evaluate(std, ctx)
+}

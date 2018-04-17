@@ -10,7 +10,7 @@ type WorkflowDefinition struct {
 
 // StepDefinition structure to handle workflow steps
 type StepDefinition struct {
-	Target     string               `yaml:"target,omitempty" json:"target,omitempty"`
+	Target     PropertyAssignment   `yaml:"target,omitempty" json:"target,omitempty"`
 	OnSuccess  []string             `yaml:"on_success,omitempty" json:"on_success,omitempty"`
 	Activities []ActivityDefinition `yaml:"activities,omitempty" json:"activities,omitempty"`
 	Filter     Filter               `yaml:"filter,omitempty" json:"filter,omitempty"`

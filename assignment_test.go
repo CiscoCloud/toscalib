@@ -624,3 +624,57 @@ func TestEvaluateGetArtifact(t *testing.T) {
 	}
 
 }
+
+func TestEvaluateWorkflowInputs(t *testing.T) {
+	fname := "./tests/tosca_web_application_with_wf_inputs.yaml"
+	var s ServiceTemplateDefinition
+	o, err := os.Open(fname)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = s.Parse(o)
+	if err != nil {
+		t.Log("Error in processing", fname)
+		t.Fatal(err)
+	}
+
+	// Set and verify the input value before peforming eval
+	// Get the value back in raw format PropertyAssignment as the
+	// value itself does not require evaluation.
+	s.SetWorkFlowInputValue("target", "scaleup-app", "web_app")
+	in := s.GetWorkflowInputValue("target", "scaleup-app", true)
+	if inv, ok := in.(PropertyAssignment); ok {
+		if inv.Value != "web_app" {
+			t.Log("(actual) failed to properly set the input value", inv)
+			t.Fail()
+		}
+	} else {
+		t.Log("(raw) failed to properly set the input value", in)
+		t.Fail()
+	}
+
+	wf, ok := s.TopologyTemplate.Workflows["scaleup-app"]
+
+	if !ok {
+		t.Log(fname, "missing workflow definition `scaleup-app`")
+		t.Fail()
+	}
+
+	step, ok := wf.Steps["scale"]
+	if !ok {
+		t.Log(fname, "missing step definition `scale`")
+		t.Fail()
+	}
+
+	v := step.Target.EvaluateForWorkflow(&s, "scaleup-app")
+	if vstr, ok := v.(string); ok {
+		if vstr != "web_app" {
+			t.Log(fname, "input evaluation failed to get value for `target`", vstr)
+			t.Fail()
+		}
+	} else {
+		t.Log("input value returned not the correct type", v)
+		t.Fail()
+	}
+
+}
