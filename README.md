@@ -29,7 +29,7 @@ The normative types definitions are included de facto. The files are embeded usi
 ## Dynamic targets for workflow steps
 We made a few tweaks to this library that we thought would be useful. When defining workflow steps, you can now set the step target dynamically using the get_input property function. The library will first look in  workflow inputs for the value and if it is not present in the workflow inputs, will check the template inputs for the same.
 
-Please note that this functionationlity is not as per the specification. This is an additional feature on top of the spec. However, this feature is fully backward compatible with the specification, meaning that you can go ahead and use a plain string as the step target, same as before. 
+Please note that this functionationlity is not as per the specification. This is an additional feature on top of the spec. However, this feature is fully backward compatible with the specification, meaning that you can go ahead and use a plain string as the step target, as per the TOSCA specification. 
 
 ### But why?
 While working with the TOSCA spec for our applications, we realized that since the workflow step target is a static value, we had to define multiple imperative workflows in order to essentially do the same steps for different nodes. Basically, workflows were not reusable across nodes. With small applications with 2 or 3 nodes this wouldn't be much of an issue, but with large applications with many more nodes, this would lead to extremely verbose profiles with a lot of redundancy.
@@ -163,6 +163,10 @@ workflows:
             - set_state: scaled
 ```
 Now any node that supports the Scale.scaleup call_operation can be scaled up using the scaleup-app workflow. All that would need to be done is to pass in the target you want to scale up as an input to the workflow.
+
+##Do we want to make this part of the spec?
+
+We do believe this feature will improve reusability with regard to TOSCA workflows. We intend to get in touch with the folks who defined the TOSCA specification to both understand the reasoning behind their current specfications for step definition targets, as well as to discuss whether the above feature should/could be included in the specficiations.
 
 # Howto
 
