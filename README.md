@@ -40,51 +40,44 @@ Assume we define our application as per the below node templates:
 ```yaml
   node_templates:
     ui-ctnr:
-      type: cisco.nodes.ScalableContainer
+      type: tosca.nodes.ScalableContainer
       properties:
         username: { get_input: uname }
         namespace: { get_input: name_space }
         password: { get_input: pword }
-        openshift_config: { get_input: oshift_url}
-        image_name: containers.cisco.com/royvargh/cabdemoui
+        image_name: dummy/path/to/image
         image_tag: latest
-        avail_zone: { get_input: avail_zone }
         run_as_root: true
         ports:
           -
             name: web
             port: 80
             protocol: TCP
-        environment:
-          CISCO_LC: dev
       requirements:
         - endpoint:
-            node: cabdemoapi
+            node: api-svc-1
             capability: tosca.capabilities.Endpoint
             relationship: tosca.relationships.ConnectsTo
         - endpoint:
-            node: cabdemoapi2
+            node: api-svc-2
             capability: tosca.capabilities.Endpoint
             relationship: tosca.relationships.ConnectsTo
 
     api-ctnr:
-      type: cisco.nodes.ScalableContainer
+      type: tosca.nodes.ScalableContainer
       properties:
         replicas: 1
         username: { get_input: uname }
         namespace: { get_input: name_space }
         password: { get_input: pword }
-        openshift_config: { get_input: oshift_url}
-        image_name: containers.cisco.com/coenglan/cabdemoapi
+        image_name: dummy/path/to/image
         image_tag: latest
-        avail_zone: { get_input: avail_zone }
         ports:
           -
             name: web
             port: 8080
             protocol: TCP
-        environment:
-          CISCO_LC: dev
+
 ```		  
 This would result in 2 nodes being deployed for our application. Now we expect that the ui-ctnr will see a lot of load, so we define a scale-up workflow so that we can bump up the number of replicas if we need to.
 ```yaml
